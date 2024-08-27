@@ -598,8 +598,8 @@ def chapter_allocation(manga_chapter_json):
         if config.SETTINGS['CBZ']:
             with console.status(f"[bold yellow]正在保存CBZ存档:[{manga_name}]{chapter_name}[/]"):
                 create_cbz(str(int(manga_chapter_info_json['results']['chapter']['index']) + 1), chapter_name,
-                           manga_name, f"{manga_name}/{chapter_name}/", config.SETTINGS['cbz_path'],
-                           manga_chapter_info_json['results']['chapter']['comic_path_word'])
+                           manga_name, f"{manga_name}/{chapter_name}/", config.SETTINGS['cbz_path'], manga_name)
+                        #    manga_chapter_info_json['results']['chapter']['comic_path_word'])
             print(f"[bold green][:white_check_mark:]已将[{manga_name}]{chapter_name}保存为CBZ存档[/]")
 
 
