@@ -506,8 +506,8 @@ def manga_chapter(manga_path_word, group_path_word):
         return_json["end"] = int(ARGS.MangaEnd)
         return return_json
     want_to = int(Prompt.ask(f"获取到{manga_chapter_json['results']['total']}话内容，请问如何下载?"
-                             f"[italic yellow](0:全本下载,1:范围下载,2:单话下载)[/]",
-                             choices=["0", "1", "2"], default="0"))
+                             f"[italic yellow](0:全本下载,1:范围下载,2:单话下载,3:下载至最新话)[/]",
+                             choices=["0", "1", "2", "3"], default="0"))
     if want_to == 0:
         return_json["start"] = -1
         return_json["end"] = -1
@@ -527,6 +527,12 @@ def manga_chapter(manga_path_word, group_path_word):
         return_json["end"] = return_json["start"]
         print(f"[italic blue]您选择下载[yellow]{manga_chapter_json['results']['list'][return_json['end']]['name']}[/]")
         return return_json
+    if want_to == 3:
+        return_json["start"] = int(Prompt.ask("请输入开始下载的话数")) - 1
+        return_json["end"] = -1
+        print(f"[italic blue]您选择从[yellow]{manga_chapter_json['results']['list'][return_json['start']]['name']}"
+              f"[/yellow]开始下载[/]")
+        return return_json
 
 
 def chapter_allocation(manga_chapter_json):
@@ -535,6 +541,9 @@ def chapter_allocation(manga_chapter_json):
     elif manga_chapter_json['start'] == manga_chapter_json['end']:
         # 转换为一个只包含一个元素的数组
         manga_chapter_list = [manga_chapter_json['json']['results']['list'][manga_chapter_json['start']]]
+    elif manga_chapter_json['end']==-1:
+        manga_chapter_list = manga_chapter_json['json']['results']['list'][
+                             manga_chapter_json['start']:]
     else:
         manga_chapter_list = manga_chapter_json['json']['results']['list'][
                              manga_chapter_json['start']:manga_chapter_json['end']]
