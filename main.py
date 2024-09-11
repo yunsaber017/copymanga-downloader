@@ -85,7 +85,7 @@ def command_mode():
     if ARGS.Output:
         config.SETTINGS['download_path'] = ARGS.Output
     manga_chapter_json = manga_chapter(ARGS.MangaPath, ARGS.MangaGroup)
-    chapter_allocation(manga_chapter_json)
+    chapter_allocation(manga_chapter_json, 'ARGS.MangaGroup')
     print(f"[bold green][:white_check_mark: ]漫画已经下载完成！[/]")
 
 
@@ -111,7 +111,7 @@ def welcome():
         choice_manga_path_word = search_on_collect()
     manga_group_path_word = manga_group(choice_manga_path_word)
     manga_chapter_json = manga_chapter(choice_manga_path_word, manga_group_path_word)
-    chapter_allocation(manga_chapter_json)
+    chapter_allocation(manga_chapter_json, manga_group_path_word)
 
 
 # 自动更新相关
@@ -253,7 +253,7 @@ def update_download():
                                                 comic['manga_group_path_word'],
                                                 comic['now_chapter'])
         if manga_chapter_json != 0:
-            chapter_allocation(manga_chapter_json)
+            chapter_allocation(manga_chapter_json, comic['manga_group_path_word'])
 
 
 def update_get_chapter(manga_path_word, manga_group_path_word, now_chapter):
@@ -535,7 +535,7 @@ def manga_chapter(manga_path_word, group_path_word):
         return return_json
 
 
-def chapter_allocation(manga_chapter_json):
+def chapter_allocation(manga_chapter_json, manga_group_path_word):
     if manga_chapter_json['start'] < 0:
         manga_chapter_list = manga_chapter_json['json']['results']['list']
     elif manga_chapter_json['start'] == manga_chapter_json['end']:
@@ -604,10 +604,11 @@ def chapter_allocation(manga_chapter_json):
 
         print(f"[bold green][:white_check_mark:][{manga_name}]{chapter_name}下载完成！[/]")
         epub_transformerhelper(download_path, manga_name, chapter_name)
+        manga_group_path_word = manga_chapter_info_json['results']['chapter']['comic_path_word'];
         if config.SETTINGS['CBZ']:
             with console.status(f"[bold yellow]正在保存CBZ存档:[{manga_name}]{chapter_name}[/]"):
                 create_cbz(str(int(manga_chapter_info_json['results']['chapter']['index']) + 1), chapter_name,
-                           manga_name, f"{manga_name}/{chapter_name}/", config.SETTINGS['cbz_path'], manga_name)
+                           manga_name, f"{manga_name}/{chapter_name}/", config.SETTINGS['cbz_path'], manga_name, manga_group_path_word)
                         #    manga_chapter_info_json['results']['chapter']['comic_path_word'])
             print(f"[bold green][:white_check_mark:]已将[{manga_name}]{chapter_name}保存为CBZ存档[/]")
 
