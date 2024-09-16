@@ -559,7 +559,10 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
             response.raise_for_status()
         except Exception as e:
             time.sleep(5)
-            response.raise_for_status()
+            print(f"请求失败: {e}")
+            continue
+            # todo 添加重试机制。未能下载的漫画进行提示
+            #response.raise_for_status()
         manga_chapter_info_json = response.json()
 
         img_url_contents = manga_chapter_info_json['results']['chapter']['contents']
