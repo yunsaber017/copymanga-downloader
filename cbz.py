@@ -21,12 +21,13 @@ def create_cbz(index, title, manga_name, save_dir, cbz_dir, path_word, manga_gro
     file_name = f"{manga_name}-{title}.cbz"
     cbz_dir = os.path.join(cbz_dir, path_word)
 
+    print(f"[green]漫画组别：{manga_group_path_word}[/]");
     # 根据不同组创建目录，defalut目录不变，
     if '单行本' in manga_group_path_word or 'tankobon' in manga_group_path_word:
         cbz_dir = os.path.join(cbz_dir,  path_word+'-单行本')
     elif 'other_group' in manga_group_path_word or '其他' in manga_group_path_word:
         cbz_dir = os.path.join(cbz_dir, path_word+'-其他')   
-
+    print(f"[green]保存路径：{cbz_dir}[/]");
     file_path = os.path.join(cbz_dir, file_name)
 
     # 检测漫画保存目录是否存在

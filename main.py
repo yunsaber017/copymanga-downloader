@@ -85,7 +85,7 @@ def command_mode():
     if ARGS.Output:
         config.SETTINGS['download_path'] = ARGS.Output
     manga_chapter_json = manga_chapter(ARGS.MangaPath, ARGS.MangaGroup)
-    chapter_allocation(manga_chapter_json, 'ARGS.MangaGroup')
+    chapter_allocation(manga_chapter_json, ARGS.MangaGroup)
     print(f"[bold green][:white_check_mark: ]漫画已经下载完成！[/]")
 
 
@@ -604,7 +604,6 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
 
         print(f"[bold green][:white_check_mark:][{manga_name}]{chapter_name}下载完成！[/]")
         epub_transformerhelper(download_path, manga_name, chapter_name)
-        manga_group_path_word = manga_chapter_info_json['results']['chapter']['comic_path_word'];
         if config.SETTINGS['CBZ']:
             with console.status(f"[bold yellow]正在保存CBZ存档:[{manga_name}]{chapter_name}[/]"):
                 create_cbz(str(int(manga_chapter_info_json['results']['chapter']['index']) + 1), chapter_name,
