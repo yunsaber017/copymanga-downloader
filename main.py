@@ -228,14 +228,15 @@ def save_updates(manga_path_word, manga_group_path_word, manga_name, now_chapter
 
 
 # 判断是否已经有了，此函数是为了追踪用户下载到哪一话
-def save_new_update(manga_path_word, now_chapter):
+def save_new_update(manga_path_word, now_chapter, manga_group_path_word):
     global UPDATE_LIST
     home_dir = os.path.expanduser("~")
     if not os.path.exists(os.path.join(home_dir, '.copymanga-downloader/')):
         os.mkdir(os.path.join(home_dir, '.copymanga-downloader/'))
     updates_path = os.path.join(home_dir, ".copymanga-downloader/update.json")
     for item in UPDATE_LIST:
-        if item['manga_path_word'] == manga_path_word:
+        # 检测漫画名和分组（default，tankobon等）
+        if item['manga_path_word'] == manga_path_word and item['manga_group_path_word'] == manga_group_path_word:
             item['now_chapter'] = now_chapter
             with open(updates_path, "w") as f:
                 json.dump(UPDATE_LIST, f)
@@ -603,7 +604,8 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
         # 实施添加下载进度
         if ARGS and ARGS.subscribe == "1":
             save_new_update(manga_chapter_info_json['results']['chapter']['comic_path_word'],
-                            manga_chapter_info_json['results']['chapter']['index'] + 1)
+                            manga_chapter_info_json['results']['chapter']['index'] + 1,
+                            manga_group_path_word)
 
         print(f"[bold green][:white_check_mark:][{manga_name}]{chapter_name}下载完成！[/]")
         epub_transformerhelper(download_path, manga_name, chapter_name)
