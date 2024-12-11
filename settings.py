@@ -219,7 +219,8 @@ def change_settings():
                 else:
                     res = loginhelper(username, password, api_urls[choice - 1])
                     if res["token"]:
-                        config.SETTINGS["username"] = f"Token {res['token']}"
+                        config.SETTINGS["authorization"] = f"Token {res['token']}"
+                        config.SETTINGS["username"] = username
                         config.SETTINGS["salt"] = res["salt"]
                         config.SETTINGS["password"] = res["password_enc"]
                         break
@@ -306,6 +307,8 @@ def load_settings():
     # 设置请求头
     config.API_HEADER['use_oversea_cdn'] = settings['use_oversea_cdn']
     config.API_HEADER['use_webp'] = settings['use_webp']
+    if 'UA' in settings:
+        config.API_HEADER['User-Agent'] = settings['UA']
     # 设置代理
     if settings["proxies"]:
         config.PROXIES = {

@@ -67,25 +67,21 @@ def parse_args():
     return parser.parse_args()
 
 
-# 命令行参数全局化
-
-ARGS = parse_args()
-
-
 # 命令行模式
 def command_mode():
-    if ARGS.UseOSCdn or ARGS.UseWebp:
-        config.API_HEADER['use_oversea_cdn'] = ARGS.UseOSCdn
-        config.API_HEADER['use_webp'] = ARGS.UseWebp
-    if ARGS.Proxy:
+    if config.ARGS.UseOSCdn or config.ARGS.UseWebp:
+        config.API_HEADER['use_oversea_cdn'] = config.ARGS.UseOSCdn
+        config.API_HEADER['use_webp'] = config.ARGS.UseWebp
+    if config.ARGS.Proxy:
         config.PROXIES = {
-            "http": ARGS.Proxy,
-            "https": ARGS.Proxy
+            "http": config.ARGS.Proxy,
+            "https": config.ARGS.Proxy
         }
-    if ARGS.Output:
-        config.SETTINGS['download_path'] = ARGS.Output
-    manga_chapter_json = manga_chapter(ARGS.MangaPath, ARGS.MangaGroup)
-    chapter_allocation(manga_chapter_json, ARGS.MangaGroup)
+
+    if config.ARGS.Output:
+        config.SETTINGS['download_path'] = config.ARGS.Output
+    manga_chapter_json = manga_chapter(config.ARGS.MangaPath, config.ARGS.MangaGroup)
+    chapter_allocation(manga_chapter_json, config.ARGS.MangaGroup)
     print(f"[bold green][:white_check_mark: ]漫画已经下载完成！[/]")
 
 
@@ -271,13 +267,12 @@ def update_get_chapter(manga_path_word, manga_group_path_word, now_chapter):
         time.sleep(5)
         response.raise_for_status()
     manga_chapter_json = response.json()
-    # Todo 创建传输的json,并且之后会将此json保存为temp.json修复这个问题https://github.com/misaka10843/copymanga-downloader/issues/35
     return_json = {
         "json": manga_chapter_json,
         "start": -1,
         "end": -1
     }
-    # Todo 支持500+话的漫画(感觉并不太需要)
+    # Todo 支持500+话的漫画(感觉并不太需要,如果真的要下的话就添加进半自动更新里面吧x)
     if not manga_chapter_json['results']['list']:
         print(f"[bold blue]此漫画并未有新的章节，我们将跳过此漫画[/]")
         return 0
@@ -502,9 +497,10 @@ def manga_chapter(manga_path_word, group_path_word):
         sys.exit()
     # 询问应该如何下载
     # 如果是命令行参数就直接返回对应
-    if ARGS:
-        return_json["start"] = int(ARGS.MangaStart) - 1
-        return_json["end"] = int(ARGS.MangaEnd)
+
+    if config.ARGS.MangaPath:
+        return_json["start"] = int(config.ARGS.MangaStart) - 1
+        return_json["end"] = int(config.ARGS.MangaEnd)
         return return_json
     want_to = int(Prompt.ask(f"获取到{manga_chapter_json['results']['total']}话内容，请问如何下载?"
                              f"[italic yellow](0:全本下载,1:范围下载,2:单话下载,3:下载至最新话)[/]",
@@ -575,7 +571,6 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
         download_path = config.SETTINGS['download_path']
         chapter_name = manga_chapter_info_json['results']['chapter']['name']
         # 检查漫画文件夹是否存在
-
         if not os.path.exists(f"{download_path}/{manga_name}/"):
             os.mkdir(f"{download_path}/{manga_name}/")
         # 创建多线程
@@ -588,6 +583,10 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
                 os.mkdir(f"{download_path}/{manga_name}/{chapter_name}/")
             # 组成下载路径
             filename = f"{download_path}/{manga_name}/{chapter_name}/{str(img_words[i] + 1).zfill(3)}.jpg"
+            # 判断是否已经下载
+            if os.path.exists(filename):
+                print(f"[blue]您已经下载了{filename}，跳过下载[/]")
+                continue
             t = threading.Thread(target=download, args=(url, filename))
             # 开始线程
             threads.append(t)
@@ -602,7 +601,7 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
                     t.join()
                 threads.clear()
         # 实施添加下载进度
-        if ARGS and ARGS.subscribe == "1":
+        if config.ARGS and config.ARGS.subscribe == "1":
             save_new_update(manga_chapter_info_json['results']['chapter']['comic_path_word'],
                             manga_chapter_info_json['results']['chapter']['index'] + 1,
                             manga_group_path_word)
@@ -620,10 +619,6 @@ def chapter_allocation(manga_chapter_json, manga_group_path_word):
 # 下载相关
 
 def download(url, filename, overwrite=False):
-    # 判断是否已经下载
-    if not overwrite and os.path.exists(filename):
-        print(f"[blue]您已经下载了{filename}，跳过下载[/]")
-        return
     img_api_restriction()
     if config.SETTINGS['HC'] == "1":
         url = url.replace("c800x.jpg", "c1500x.jpg")
@@ -646,27 +641,30 @@ def download(url, filename, overwrite=False):
 
 
 def main():
-    global ARGS
     loaded_settings = load_settings()
     if not loaded_settings[0]:
         print(f"[bold red]{loaded_settings[1]},我们将重新为您设置[/]")
         set_settings()
-    parse_args()
-    if ARGS:
-        if ARGS.subscribe == "1":
+    config.ARGS = parse_args()
+    if config.ARGS and len(sys.argv) != 1:
+        if config.ARGS.subscribe == "1":
             print(
                 "[bold purple]请注意！此模式下可能会导致部分img下载失败，如果遇见报错还请您自行删除更新列表然后重新添加后运行，此程序会重新下载并跳过已下载内容[/]")
             update_download()
             sys.exit()
-        if ARGS.MangaPath and ARGS.MangaEnd and ARGS.MangaStart:
+        if config.ARGS.MangaPath and config.ARGS.MangaEnd and config.ARGS.MangaStart:
             command_mode()
             # 防止运行完成后又触发正常模式
             sys.exit()
         else:
             print("[bold red]命令行参数中缺少必要字段,将切换到普通模式[/]")
-            ARGS = None
+            config.ARGS = None
     welcome()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n[bold green]正在关闭，感谢您使用本程序[/]")
+        exit(0)

@@ -1,16 +1,27 @@
 > [!WARNING]
-> *
-*在2023.1.28更新之后，cbz功能的保存路径被改变，请所有使用cbz功能的用户最好[查看修改内容](https://github.com/misaka10843/copymanga-downloader/pull/89#issue-2104150068)
+> **在2024.1.28更新之后，cbz功能的保存路径被改变，请所有使用cbz功能的用户最好[查看修改内容](https://github.com/misaka10843/copymanga-downloader/pull/89#issue-2104150068)
 了解新路径以及元信息问题！**
+> 
+> 在2024.11.16时copymanga下架了所有(应该)粉色网站漫画，如果您的更新列表中有粉色网站代理的漫画可能会导致程序终止，可能需要您手动删除对应漫画，还请谅解(可惜了之后看高画质的话不能白嫖了)
 
 > [!NOTE]
 > **请注意，在提交ISSUE前，请确保@misaka10843，以防止长时间未查看！**
 >
 > **因为尽可能缓解copymanga服务器压力，此程序限制了每分钟只能访问15次API，还请理解！**
+>
+> **为了您能够更好的更新程序，建议直接运行`pip install copymanga-downloader`安装pip包后直接运行`copymanga-dl`来启动程序**
 
 # copymanga-downloader
 
 ![Head diagram](https://s2.loli.net/2022/03/30/b4eM9gArp5q2VKu.png)
+
+<p align="center">
+  <a href="https://pypi.org/project/copymanga-downloader/" target="_blank"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/copymanga-downloader?style=for-the-badge&logo=PyPI"></a>
+  <a href="https://github.com/misaka10843/copymanga-downloader/graphs/contributors" target="_blank"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/misaka10843/copymanga-downloader?style=for-the-badge&logo=github"></a>
+  <a href="https://github.com/misaka10843/copymanga-downloader/stargazers" target="_blank"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/misaka10843/copymanga-downloader?style=for-the-badge&label=%E2%AD%90STAR"></a>
+</p>
+
+
 
 ## 前言💭
 
@@ -61,6 +72,14 @@
 > A8: 因为懒（不是），感觉没有更新什么实质性内容所以就没有更新，如果需要的话请在[Actions](https://github.com/misaka10843/copymanga-downloader/actions)中下载
 
 ## 下载
+
+推荐使用pip进行包管理
+
+安装：`pip install copymanga-downloader`
+
+更新：`pip install --upgrade copymanga-downloader`
+
+启动命令：`copymanga-dl`
 
 [releases(稳定)](https://github.com/misaka10843/copymanga-downloader/releases)
 
@@ -203,6 +222,8 @@ options:
 ## 更新 🔬
 
 ### 重大更新 📈
+
+2024/11/24: 添加UA设置(仅支持到配置文件中自定义)，修复多个bug
 
 2024/1/14: [@TwoOnefour](https://github.com/TwoOnefour)添加账号密码登陆和转换为epub并推送到kindle的功能
 
